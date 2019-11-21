@@ -1,0 +1,188 @@
+---
+title: "data-finalproj"
+author: "Feven Yohannes"
+date: "November 4, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(readr)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(stringr)
+library(janitor)
+library(gt)
+library(tidyverse)
+library(httr)
+library(rvest)
+library(dplyr)
+```
+
+Clean data for the UN
+```{r}
+un <- read_html("http://data.un.org/en/iso/et.html", skip=4, col_names=TRUE)
+tbls <- html_nodes(un, "table")
+un_tbl <- un %>%
+        html_nodes("table") %>%
+        .[3:4] %>%
+        html_table(fill = TRUE, header=TRUE)
+
+un_test <- un_tbl %>% map_df(bind_rows) #Merged two tibbles within one tibble
+  
+colnames(un_test)[1] <- "indicators" #Renamed first column
+colnames(un_test)[5] <- "indicators2" #Renamed fifth column
+
+
+un_test<- un_test  %>%
+  unite(col="merged",c("indicators","indicators2"),sep="", na.rm=TRUE)
+#Merged both of the indicators together, so it could fall under one column.
+```
+
+Reshaping data for graph purposes
+```{r}
+un_graph <- un_test %>%
+  pivot_longer(cols=c(`2005`,`2010`,`2018`),names_to= "Years") 
+  
+```
+
+Writing data into an Rds file
+```{r}
+write_rds(un_graph,"Ethiopia_Economic_Development/UN.rds")
+```
+
+
+First graphy for shiny demo
+```{r}
+un_graph %>%
+  filter(str_detect(merged,fixed("Economy: Agriculture"))) %>%
+  ggplot(aes(x=Years,y=value,group=merged)) + 
+  geom_point() +
+  geom_line()
+```
+
+```{r}
+
+```
+
+
+
+
+Second graph for Shiny Demo
+```{r}
+un_graph %>%
+  filter(merged %in% c("GDP: Gross domestic product (million current US$)")) %>%
+  ggplot(aes(x=Years,y=value)) +geom_point()
+
+
+#String split for merged indicator and units
+#Strip the parathenses 
+
+
+```
+
+Clean data for the World bank
+```{r}
+world_bank <- read.csv("/Users/feven/Downloads/API_ETH_DS2_en_csv_v2_205341 (5).csv", header = TRUE, sep = ",", na.strings = ".") 
+
+```
+
+Re-formating the world bank data so all the years are in one column. Makes it easier to graph.
+```{r}
+world_bank <- world_bank %>%
+  pivot_longer(cols=c(`X1960`,`X1961`,`X1962`,`X1963`,`X1964`,`X1965`,`X1966`,`X1967`,`X1968`,`X1969`,`X1970`,`X1971`,`X1972`,`X1973`,`X1974`,`X1975`,`X1976`,`X1977`,`X1978`,`X1979`,`X1980`, `X1981`,`X1982`,`X1983`,`X1984`,`X1985`,`X1986`,`X1987`,`X1988`,`X1989`,`X1990`,`X1991`,`X1992`,`X1993`,`X1994`,`X1995`,`X1996`,`X1997`,`X1998`,`X1999`,`X2000`,`X2001`,`X2002`,`X2003`,`X2004`,`X2005`,`X2006`,`X2007`,`X2008`,`X2009`,`X2010`,`X2011`,`X2012`,`X2013`,`X2014`,`X2015`,`X2016`,`X2017`,`X2018`),names_to= "Years") 
+```
+
+Mutating for Years without the x's in front of it
+```{r}
+world_bank <- world_bank %>% mutate(Years_new = as.numeric(substr(Years,2,5)))
+```
+
+```{r}
+
+```
+
+
+Reading World Bank Data into rds
+```{r}
+write_rds(world_bank,"Ethiopia_Economic_Development/Worldbank.rds")
+```
+
+World Bank, mortality rate for infant graphs
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Mortality rate, under-5"))) %>%
+  ggplot(aes(x=Years_new,y=value)) +geom_point() + scale_x_continuous(breaks = seq(1970,2018,by = 5)) +scale_x_continuous(breaks = seq(0,244.7,by = 10))   
+  #I want to see it in general, not for each gender
+```
+
+World Bank, Incidence of Malaria
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Incidence of malaria"))) %>%
+  ggplot(aes(x=Years_new,y=value)) +geom_point()
+    
+```
+
+World Bank, Maternal Deaths
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Number of maternal deaths"))) %>%
+  ggplot(aes(x=Years_new,y=value)) + geom_point()
+```
+
+World Bank, Primary School Enrollment by Gender and Total
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("School enrollment, primary"))) %>%
+    ggplot(aes(x=Years_new,y=value))
+```
+World Bank, C02 emissons
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("CO2 emissions (metric tons per capita)")))
+```
+
+World Bank, Electricity Access
+```{r}
+world_bank %>%
+  filter(Indicator.Name == ("Access to electricity(% of population)"))
+```
+World Bank, Urban Population 
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Urban population (% of total population)")))
+```
+World Bank, Total Population #maybe combine both graphs
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Population, total")))
+```
+
+UN, GDP
+```{r}
+un_graph %>%
+  filter(str_detect(merged,fixed("GDP: Gross domestic product"))) %>%
+  ggplot(aes(x=Years,y=value)) +geom_point()
+  
+```
+UN, GDP per capita
+```{r}
+gdp<-un_graph %>%
+  filter(str_detect(merged,fixed("GDP per capita"))) %>%
+  ggplot(aes(x=Years,y=value)) +geom_point()
+```
+
+Dataset for Map
+```{r,message=FALSE,warning=FALSE}
+map <- read_csv("Ethiopia_Economic_Development/et.csv")
+```
+
+Reading the Map Data as a rds
+```{r}
+write_rds(map,"Ethiopia_Economic_Development/map.rds")
+```
+
+
