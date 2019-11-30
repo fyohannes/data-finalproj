@@ -15,10 +15,14 @@ library(ggplot2)
 library(stringr)
 library(janitor)
 library(gt)
-library(tidyverse)
 library(httr)
 library(rvest)
 library(dplyr)
+library(fs)
+library(sf)
+library(gganimate)
+library(tidyverse)
+library(gganimate)
 ```
 
 Clean data for the UN
@@ -48,6 +52,11 @@ un_graph <- un_test %>%
   
 ```
 
+```{r}
+un_graph <- un_graph %>%
+  mutate(value_new= (str_remove_all(value, "[bdlc]"))) 
+``` 
+
 Writing data into an Rds file
 ```{r}
 write_rds(un_graph,"Ethiopia_Economic_Development/UN.rds")
@@ -70,16 +79,34 @@ un_graph %>%
 
 
 
-Second graph for Shiny Demo
+Second graph for Shiny Demo, FACET GRID FOR JOBS
 ```{r}
 un_graph %>%
-  filter(merged %in% c("GDP: Gross domestic product (million current US$)")) %>%
-  ggplot(aes(x=Years,y=value)) +geom_point()
-
+ filter(str_detect(merged,fixed("Economy"))) %>%
+  ggplot(aes(x=Years,y=value_new)) +geom_point(color="green") +
+  #Changing the alpha transparency of the points
+  geom_smooth(se = FALSE, method = "lm") +
+  #Adding a best fit line
+  facet_grid(. ~ merged) +
+  labs(title = "Change in job sectors",
+              x = "Years",
+              y= "% of employed population")
 
 #String split for merged indicator and units
 #Strip the parathenses 
 
+x %>%
+  ggplot(aes(x=workload,y=overall)) +
+   #Plotting Overall scores in relation to workload
+  geom_point(color="green") +
+  #Changing the alpha transparency of the points
+  geom_smooth(se = FALSE, method = "lm") +
+  #Adding a best fit line
+  facet_grid(. ~ divisional_distribution) +
+   labs(title = "Change in job sectors",
+              x = "Years",
+              y= "% of employed population")
+   
 
 ```
 
@@ -100,15 +127,27 @@ Mutating for Years without the x's in front of it
 world_bank <- world_bank %>% mutate(Years_new = as.numeric(substr(Years,2,5)))
 ```
 
+Dropping NA's for the world bank
 ```{r}
+world_bank$value <- as.character(world_bank$value)
 
+world_bank %>%
+  drop_na()
 ```
 
+
+```{r}
+world_bank <- world_bank %>%
+      filter(value != "NA" )
+ 
+world_bank$value <- as.numeric(world_bank$value)
+```
 
 Reading World Bank Data into rds
 ```{r}
 write_rds(world_bank,"Ethiopia_Economic_Development/Worldbank.rds")
 ```
+
 
 World Bank, mortality rate for infant graphs
 ```{r}
@@ -136,9 +175,21 @@ world_bank %>%
 World Bank, Primary School Enrollment by Gender and Total
 ```{r}
 world_bank %>%
-  filter(str_detect(Indicator.Name,fixed("School enrollment, primary"))) %>%
-    ggplot(aes(x=Years_new,y=value))
+  filter(str_detect(Indicator.Name,fixed("School enrollment, primary, male"))) %>%
+    ggplot(aes(x=Years_new,y=value)) +geom_point() +
+  geom_smooth(se = FALSE, method = "lm")
 ```
+
+World Bank, 
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Access to electricity (% of population)"))) %>%
+    ggplot(aes(x=Years_new,y=value)) +geom_point() 
+```
+
+
+
+
 World Bank, C02 emissons
 ```{r}
 world_bank %>%
@@ -160,6 +211,17 @@ World Bank, Total Population #maybe combine both graphs
 world_bank %>%
   filter(str_detect(Indicator.Name,fixed("Population, total")))
 ```
+
+World Bank, Taxes on Income 
+Taxes on income, profits and capital gains
+```{r}
+world_bank %>%
+  filter(str_detect(Indicator.Name,fixed("Taxes on income, profits and capital gains (% of revenue)"))) %>%
+    ggplot(aes(x=Years_new,y=value)) +geom_point() 
+
+```
+
+
 
 UN, GDP
 ```{r}
@@ -185,4 +247,32 @@ Reading the Map Data as a rds
 write_rds(map,"Ethiopia_Economic_Development/map.rds")
 ```
 
+
+```{r}
+locations <-st_as_sf(map,coords=c('lng','lat')) 
+
+map <- ggplot() +
+   geom_sf(data = map) +
+   geom_sf(data = locations,aes(color= city)) +
+   transition_manual(city)
+  #Made it so the data was grouped by locations and looked at the different races 
+   labs(title="Map of Ethiopia",
+        subtitle="Looking at Different Cities in Ethiopia") 
+#I gave the animation a title
+   
+
+dir_create("graphics")
+#I created a directory called graphics
+write_rds(map,"map.rds")
+map
+```
+```{r}
+map %>%
+ggplot(aes(x=lat,y=lng)) +
+    geom_sf() +
+    xlab("Longitude") + ylab("Latitude")
+
++
+    ggtitle("World map", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))
+```
 
