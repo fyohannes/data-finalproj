@@ -22,6 +22,7 @@ library(fs)
 library(sf)
 library(gganimate)
 library(tidyverse)
+library(leaflet)
 library(gganimate)
 ```
 
@@ -72,14 +73,20 @@ un_graph %>%
   geom_line()
 ```
 
+Growth of Businesses Graph 
+#Separate values for males and females 
 ```{r}
-
+un_graph %>%
+  filter(str_detect(merged,fixed("Labour force participation ratee"))) %>%
+  ggplot(aes(x=Years,y=value_new,group=merged)) + 
+  geom_point() +
+  geom_line()
 ```
 
 
 
 
-Second graph for Shiny Demo, FACET GRID FOR JOBS
+ UN Economic graph, FACET GRID FOR JOBS
 ```{r}
 un_graph %>%
  filter(str_detect(merged,fixed("Economy"))) %>%
@@ -95,17 +102,6 @@ un_graph %>%
 #String split for merged indicator and units
 #Strip the parathenses 
 
-x %>%
-  ggplot(aes(x=workload,y=overall)) +
-   #Plotting Overall scores in relation to workload
-  geom_point(color="green") +
-  #Changing the alpha transparency of the points
-  geom_smooth(se = FALSE, method = "lm") +
-  #Adding a best fit line
-  facet_grid(. ~ divisional_distribution) +
-   labs(title = "Change in job sectors",
-              x = "Years",
-              y= "% of employed population")
    
 
 ```
@@ -115,6 +111,12 @@ Clean data for the World bank
 world_bank <- read.csv("/Users/feven/Downloads/API_ETH_DS2_en_csv_v2_205341 (5).csv", header = TRUE, sep = ",", na.strings = ".") 
 
 ```
+
+
+
+
+
+
 
 Re-formating the world bank data so all the years are in one column. Makes it easier to graph.
 ```{r}
@@ -149,6 +151,8 @@ write_rds(world_bank,"Ethiopia_Economic_Development/Worldbank.rds")
 ```
 
 
+
+
 World Bank, mortality rate for infant graphs
 ```{r}
 world_bank %>%
@@ -175,8 +179,10 @@ world_bank %>%
 World Bank, Primary School Enrollment by Gender and Total
 ```{r}
 world_bank %>%
-  filter(str_detect(Indicator.Name,fixed("School enrollment, primary, male"))) %>%
-    ggplot(aes(x=Years_new,y=value)) +geom_point() +
+  filter(str_detect(Indicator.Name,fixed("School enrollment, primary"))) %>%
+  filter(!str_detect(Indicator.Name,"private")) %>%
+  filter(str_detect(Indicator.Name,fixed("% gross"))) %>%
+    ggplot(aes(x=Years_new,y=value,color=Indicator.Name)) +geom_point() +
   geom_smooth(se = FALSE, method = "lm")
 ```
 
@@ -274,5 +280,16 @@ ggplot(aes(x=lat,y=lng)) +
 
 +
     ggtitle("World map", subtitle = paste0("(", length(unique(world$NAME)), " countries)"))
+```
+
+Map of Ethiopia with Leaflet
+```{r}
+
+m <- leaflet(options = leafletOptions(dragging = FALSE,
+minZoom = 5,
+maxZoom = 8)) %>%
+  addProviderTiles(providers$Esri.NatGeoWorldMap)  %>% 
+  addMarkers(lng=map$lng, lat=map$lat, popup=map$city) 
+m
 ```
 

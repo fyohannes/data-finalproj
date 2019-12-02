@@ -42,7 +42,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
           choices = c(
             "GDP Per Capita" = "GDP per capita",
             "Employment Rate in Agriculture" = "Employment in agriculturee",
-            "Growth of Businesses" = "Growth of Businesses"
+            "Different Job Sectors" = "Economy"
           )
         )
           ),
@@ -70,7 +70,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
               # # Show a tabset that includes a About,Economic Change, and Social Indicators,and Summary
               #of the generated distribution
               mainPanel(
-                plotOutput("Economic_Indicators2"))
+                plotOutput("Economic_Indicators3"))
             )
    ),
    tabPanel("Social Indicators for the UN", 
@@ -100,22 +100,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                   inputId = "input_5",
                   label = "Social Indicators",
                   choices = c(
-                    "Primary School Enrollment for males"="School enrollment, primary, male ",
-                    "Primary School Enrollment for females"="School enrollment, primary, female"
-                  ))
-              ),
-              
-              # # Show a tabset that includes a About,Economic Change, and Social Indicators,and Summary
-              #of the generated distribution
-              mainPanel(
-                plotOutput("Social_Indicators5")) 
-            ),
-            sidebarLayout(
-              sidebarPanel(
-                selectInput(
-                  inputId = "input_5",
-                  label = "Social Indicators",
-                  choices = c(
+                    "Primary School Enrollment by gender"="School enrollment, primary",
                     "Mortality Rate under the age of 5"= "Mortality rate, under-5",
                     "Incidents of Malaria"= "Incidence of malaria",
                     "Number of Maternal Deaths"= "Number of maternal deaths",
@@ -123,34 +108,16 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                     "Primary School Enrollment for females"="School enrollment, primary, female",
                     "Access to electricity(% of population)"="Access to electricity (% of population)",
                     "Urban population (% of total population)"="Urban population (% of total population)"
-                  ))
+                  ),
+                  selected = "School enrollment, primary")
               ),
               
               # # Show a tabset that includes a About,Economic Change, and Social Indicators,and Summary
               #of the generated distribution
               mainPanel(
-                plotOutput("Social_Indicators")) 
-            )
-   ),
-   tabPanel("Social Indicators for the World Bank", 
-            # Sidebar with a slider input for number of bins 
-            sidebarLayout(
-              sidebarPanel(
-                selectInput(
-                  inputId = "input_5",
-                  label = "Social Indicators",
-                  choices = c(
-                    "Primary School Enrollment for males"="School enrollment, primary, male ",
-                    "Primary School Enrollment for females"="School enrollment, primary, female"
-                  ))
-              ),
-              
-              # # Show a tabset that includes a About,Economic Change, and Social Indicators,and Summary
-              #of the generated distribution
-              mainPanel(
-                plotOutput("Social_Indicators3")) 
-            )
-   ),
+                plotOutput("Social_Indicators5")) 
+            )),
+            
    tabPanel("Summary",
             mainPanel (
               h2("Purpose behind the Project"),
@@ -195,14 +162,28 @@ ui <- fluidPage(theme = shinytheme("superhero"),
 server <- function(input, output) {
   output$Economic_Changes <- renderPlot({
       un_graph$value_new <- as.numeric(un_graph$value_new)
+      
+      if(input$input_1 %in% c("GDP per capita","Employment in agriculturee")){
       un_graph %>%
       filter(str_detect(merged,fixed(input$input_1))) %>%
       ggplot(aes(x=Years,y=value_new,group=merged)) +geom_point(color="red") +geom_line() +
       labs(
         title="A measure of Economic Change #looking at input",
         x="Year",
-        y=input$input_1
-      )
+        y=input$input_1)}
+      else{
+        
+      un_graph %>%
+          filter(str_detect(merged,fixed("Economy"))) %>%
+          ggplot(aes(x=Years,y=value_new, group=merged)) +geom_point(color="purple") +
+          #Changing the alpha transparency of the points
+          geom_smooth(se= FALSE, method = "lm") +
+          #Adding a best fit line
+          facet_grid(. ~ merged) +
+          labs(title = "Change in job sectors",
+               x = "Years",
+               y= "% of employed population")}
+      
   })
   output$Social_Indicators1 <- renderPlot({
       un_graph$value_new <- as.numeric(un_graph$value_new)
@@ -228,32 +209,55 @@ server <- function(input, output) {
       )
       
   })
-  output$Economic_Indicators2 <- renderPlot({
+  output$Economic_Indicators3 <- renderPlot({
     world_bank$value <- as.numeric(world_bank$value)
+    if(input$input_4 == "Taxes on income, profits and capital gains (% of revenue)"){
     world_bank %>%
       filter(value != "NA" ) %>%
-      filter(str_detect(Indicator.Name,fixed(input$input_3))) %>%
-      ggplot(aes(x=Years_new,y=value)) +geom_point(color="lightblue") +
+      filter(str_detect(Indicator.Name,fixed(input$input_4))) %>%
+      ggplot(aes(x=Years_new,y=value)) +geom_col(fill="lightblue") +
       labs(
         title="A measure of Economic Change from the World Bank #looking at input",
         x="Year",
         y=input$input_4
-      )
-    
+      )}
+    else {
+      world_bank %>%
+        filter(value != "NA" ) %>%
+        filter(str_detect(Indicator.Name,fixed(input$input_4))) %>%
+        ggplot(aes(x=Years_new,y=value)) +geom_point(color="blue") +
+        labs(
+          title="A measure of Economic Change from the World Bank #looking at input",
+          x="Year",
+          y=input$input_4
+        ) 
+    }
   })
-  output$Social_Indicators3 <- renderPlot({
+  output$Social_Indicators5 <- renderPlot({
     world_bank$value <- as.numeric(world_bank$value)
-    world_bank %>%
-      filter(value != "NA" ) %>%
-      filter(str_detect(Indicator.Name,fixed(input$input_3))) %>%
-      ggplot(aes(x=Years_new,y=value)) +geom_point(color="orange") +
-      geom_smooth(se = FALSE, method = "lm") +
-      labs(
-        title="A measure of change with a Social Indicator from the World Bank #looking at input",
-        x="Year",
-        y=input$input_5
-      )
-    
+    if(input$input_5 %in% c("School enrollment, primary")) {
+      world_bank %>%
+        filter(str_detect(Indicator.Name,fixed("School enrollment, primary"))) %>%
+        filter(!str_detect(Indicator.Name,"private")) %>%
+        filter(str_detect(Indicator.Name,fixed("% gross"))) %>%
+        ggplot(aes(x=Years_new,y=value,color=Indicator.Name)) +geom_point() +
+        geom_smooth(se = FALSE, method = "lm") + 
+        labs(
+          title= paste(input$input_5, "by gender"),
+          x="Year",
+          y= "School Enrollemnt as Gross Percent of Primary School Population")
+    }
+    else{
+      world_bank %>%
+        filter(value != "NA" ) %>%
+        filter(str_detect(Indicator.Name,fixed(input$input_5))) %>%
+        ggplot(aes(x=Years_new,y=value)) +geom_point(color="orange") +
+        geom_smooth(se = FALSE, method = "lm") +
+        labs(
+          title="A measure of change with a Social Indicator from the World Bank #looking at input",
+          x="Year",
+          y=input$input_5)
+    }
   })
 }
 
