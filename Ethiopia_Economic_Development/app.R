@@ -159,7 +159,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
               Similiar to other developing countries, the data conducted in Ethiopia throughout the last 50 years has been incomplete. Thus, there were many misisng values for different indicators; however, the plots derived from these datasets do not show these values as missing, but may"),
               # understand what is being presented
               h6("The World Bank:Ethiopia", a("HERE", href="https://data.worldbank.org/country/ethiopia")),
-              h6("Ethiopia", a("HERE", href="http://data.un.org/en/iso/et.html")),
+              h6("The UN:Ethiopia", a("HERE", href="http://data.un.org/en/iso/et.html")),
               # Ensure that the minimum relevant background is provided to)
               
               
