@@ -30,18 +30,38 @@ ui <- fluidPage(theme = shinytheme("superhero"),
    
    # Application title
    titlePanel("Ethiopia Economic Development"),
-   
    tabsetPanel(
+     
+     #Here, I wanted to have a tab panel that introduced viewers to the country of Ethiopia.
+     # I showed a map through leaflet and included a short paragraph on the history.
+     
+     tabPanel("Ethiopia", 
+                mainPanel(
+                  h3("Map of Ethiopia"),
+                  h6("A map of Ethiopia that shows the largest cities throughout the country"),
+                  leafletOutput("m"),
+                  h3("Ethiopia's Poltical and Economic History"),
+                  h4("Ethiopia is a multi-ethnic country in Eastern Africa and is often known as one of the only countries in Africa to have not been colonized. They are home to a vibrant and long lasting culture, stemming from the Kingdom of Aksum the Abyssinian Empire. 
+
+                     Over the last eighty years, Ethiopia has seen great political and economic change. Haile Selassie succeeded Empress Regnant, Zewditu, in 1930, and ruled during the fight against Italian colonization. He was disposed of his leadership in 1974 by the Derg, a communist party backed by the Soviet Union, which completely changed the political arena, civil rights and liberties, as well as the economy. Mengistu, the acting dictator, was overthrown by the Ethiopian People’s Revolutionary Democratic Front. Currently, Dr. Abiy Ahmed, a progressive leader, has made massive economic reforms and has attempted to allow for more political freedom, while also dealing with the consequences of ethnic tensions.") 
+              ))
+    ,
+    
+    #This tab panel will show different indicators from the UN.
+    
      tabPanel("Economic Changes", 
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
+  
+#This side bar panel will have different output options depending on the choice chosen. The input id connects with my output below which filters for the choice selected.
+        
         selectInput(
           inputId = "input_1",
           label = "Economic Changes",
           choices = c(
-            "GDP Per Capita" = "GDP per capita",
-            "Employment Rate in Agriculture" = "Employment in agriculturee",
+            "GDP Per Capita in US Dollars" = "GDP per capita",
+            "Employment Rate in Agriculture(% of gross value added)" = "Employment in agriculturee",
             "Different Job Sectors" = "Economy"
           )
         )
@@ -81,8 +101,8 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                   inputId = "input_2",
                   label = "Social Indicators ",
                   choices = c(
-                    "Fertility Rate (live births per Woman)" = "Fertility rate, totalj",
-                    "Refugees and People of Concern to the UNHRC" = "Refugees and others of concern to UNHCR 000"
+                    "Fertility Rate (live births per Woman)" = "Fertility rate",
+                    "Refugees and People of Concern to the UNHRC" = "Refugees and others of concern to UNHCR"
                   ))
               ),
               
@@ -104,8 +124,6 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                     "Mortality Rate under the age of 5"= "Mortality rate, under-5",
                     "Incidents of Malaria"= "Incidence of malaria",
                     "Number of Maternal Deaths"= "Number of maternal deaths",
-                    "Primary School Enrollment for males"="School enrollment, primary, male ",
-                    "Primary School Enrollment for females"="School enrollment, primary, female",
                     "Access to electricity(% of population)"="Access to electricity (% of population)",
                     "Urban population (% of total population)"="Urban population (% of total population)"
                   ),
@@ -117,13 +135,17 @@ ui <- fluidPage(theme = shinytheme("superhero"),
               mainPanel(
                 plotOutput("Social_Indicators5")) 
             )),
-            
+    
+#Including a summary page to explain motives and conclusions.
+
    tabPanel("Summary",
             mainPanel (
               h2("Purpose behind the Project"),
               h5("In this project, I'm using data from the Worldbank and The UN that shows the social and economic changes that have been occurring in Ethiopia in the last 15 years. The UN data shows data from the last fifteen years, while the Worldbank has data from the last 40. I'm trying to uncover the relationship between the social and economic indicators. Some social indicators include primary school education for male and female children and life expectancy, while the economic indicators show GDP and workforce participation. One would think that the economic growth that Ethiopia has been experiencing would lead to a better living standard for the people of Ethiopia. But is that really the case? Does the economic boom benefit the people, or those in power? The latter part of the question might be a bit difficult to answer giving the scope, but it will be interesting to compare the changes over time.
                  "),
-              h2("Conclusions")
+              h2("Conclusions"),
+              h5("By looking at the data, we can see that there has been massive economic development, especially in recent years. GDP per capita has substantially increased since 2010 with a GDP per capita of as of 2018. Furthermore, more people are straying away from the agricultural sector and are moving to the industry and service sectors, with the service exceeding 40 percent of the employed population. These upwards trend of development are also prevalent in some of the social indicators. For example, primary school enrollment has increased, mortality for children under the age of five and number of maternal deaths has declined incredibly. These indicators are especially significant to analyze, because often times the prosperity of a nation’s youth and female population can indicate the conditions of the country. From these indicators, as well as other indicators such as expected life expectancy and access to electricity, we can assume that the one’s general well-being in life has improved. 
+	Naturally, with any economic development, comes great social and environmental consequences. One can see that total greenhouse gas emissions of carbon dioxide has skyrocketed since 2000 in conjunction with more economic development such as manufacturing and urbanization. Additionally, refugees and those who the United Nations Human Right’s Committee deem as a people at risk, has increased since 2005. This is something interesting to look it because one would not expect this upward trend with increased living standards and improvement of the country’s overall economy. However, this demonstrates some of the problems that can arise with a rapid development. Thus, although economic development has not caused issues such as increased refugees, the subsequent effects of increased socioeconomic gaps, and consequences of urbanization could lead ti increased violence, especially with heightened ethnic tensions, leading to increased refugees. Overall, it is interesting to compare the state of the country and the people in comparison to the growth of the economy.")
               )),
    tabPanel("About",
             mainPanel(
@@ -131,21 +153,20 @@ ui <- fluidPage(theme = shinytheme("superhero"),
               # Provide information about the data source 
               
               h2("The Data"),
-              h5("These visualizations are based on data from the World Bank and the United Nations"), 
+              h5("These visualizations are based on data from the World Bank and the United Nations."), 
+              h5("Note about the Data: 
+                 
+              Similiar to other developing countries, the data conducted in Ethiopia throughout the last 50 years has been incomplete. Thus, there were many misisng values for different indicators; however, the plots derived from these datasets do not show these values as missing, but may"),
               # understand what is being presented
-              h6("The World Bank:Ethiopia",href="https://data.worldbank.org/country/ethiopia"),
-              h6("Ethiopia", href="http://data.un.org/en/iso/et.html"),
+              h6("The World Bank:Ethiopia", a("HERE", href="https://data.worldbank.org/country/ethiopia")),
+              h6("Ethiopia", a("HERE", href="http://data.un.org/en/iso/et.html")),
               # Ensure that the minimum relevant background is provided to)
               
-              
-              
-              h5("Citation"),
-              h6("The World Bank and The United Nations "),
               
               # Include information about the app author so that anyone impressed by my Shiny App can contact me to offer me a job
               
               h2("About Me: Feven Yohannes"),
-              h5("I am a Harvard undergraduate studying Government and Economics. My family is orginally from Eritrea and Ethiopia and I am interested in following the current event issues in these countries."),
+              h5("I am a Harvard undergraduate studying Government and Economics. My family is orginally from Eritrea and Ethiopia, and I am interested in following the current event issues in these countries."),
               h5("Contact me at fyohannes@college.harvard.edu or connect with me on LinkedIn", a("HERE", href="https://www.linkedin.com/in/feven-yohannes-06190118a/")),
               
               # Include a link to the Source Code for reproducibility and credibility
@@ -156,22 +177,30 @@ ui <- fluidPage(theme = shinytheme("superhero"),
    
 
    )
-   )
+)
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   output$Economic_Changes <- renderPlot({
       un_graph$value_new <- as.numeric(un_graph$value_new)
       
+      #Making an ifelse statement so I can render different outputs within the same sidebar panel
+      
       if(input$input_1 %in% c("GDP per capita","Employment in agriculturee")){
       un_graph %>%
       filter(str_detect(merged,fixed(input$input_1))) %>%
+      
+      #Filtering within my merged column to get the indicator chosen above in my sidebar panel
+      #Graphing with ggplot like usual
+          
       ggplot(aes(x=Years,y=value_new,group=merged)) +geom_point(color="red") +geom_line() +
       labs(
-        title="A measure of Economic Change #looking at input",
+        title=paste("Economic Change looking at", input$input_1),
         x="Year",
         y=input$input_1)}
       else{
+      
+      #Making my facet grid graph for different sectors in employment
         
       un_graph %>%
           filter(str_detect(merged,fixed("Economy"))) %>%
@@ -187,23 +216,35 @@ server <- function(input, output) {
   })
   output$Social_Indicators1 <- renderPlot({
       un_graph$value_new <- as.numeric(un_graph$value_new)
-      un_graph %>%
+      if(input$input_2 %in% c("Fertility rate")){
+      un_graph %>% 
       filter(str_detect(merged,fixed(input$input_2))) %>%
       ggplot(aes(x=Years,y=value_new,group=merged)) +geom_point(color="green") +geom_line() +
       labs(
-        title="A measure of change with a Social Indicator from the UN #looking at input",
+        title=paste("A measure of Social change in regards to", input$input_2),
         x="Year",
         y=input$input_2
-      )
+      ) }
+      else{
+        un_graph %>% 
+          filter(str_detect(merged,fixed(input$input_2))) %>%
+          ggplot(aes(x=Years,y=value_new,group=merged)) + geom_col(fill="darkgreen") +
+          labs(
+            title=paste("Change in Number of Refugees and People at Risk According to the United Nations"),
+            x="Year",
+            y=input$input_2
+          )
+      }
   })
   output$Social_Indicators <- renderPlot({
     world_bank$value <- as.numeric(world_bank$value)
     world_bank %>%
+      #Filter for NA
       filter(value != "NA" ) %>%
       filter(str_detect(Indicator.Name,fixed(input$input_3))) %>%
       ggplot(aes(x=Years_new,y=value)) +geom_point(color="orange") +
       labs(
-        title="A measure of change with a Social Indicator from the World Bank #looking at input",
+        title=paste("A measure of Social change in regards to", input$input_3),
         x="Year",
         y=input$input_3
       )
@@ -217,17 +258,18 @@ server <- function(input, output) {
       filter(str_detect(Indicator.Name,fixed(input$input_4))) %>%
       ggplot(aes(x=Years_new,y=value)) +geom_col(fill="lightblue") +
       labs(
-        title="A measure of Economic Change from the World Bank #looking at input",
+        title=paste("Economic Change from the World Bank looking at ", input$input_4),
         x="Year",
         y=input$input_4
       )}
     else {
       world_bank %>%
         filter(value != "NA" ) %>%
+        #Filtering out NA's
         filter(str_detect(Indicator.Name,fixed(input$input_4))) %>%
         ggplot(aes(x=Years_new,y=value)) +geom_point(color="blue") +
         labs(
-          title="A measure of Economic Change from the World Bank #looking at input",
+          title=paste("Economic Change from the World Bank looking at ", input$input_4),
           x="Year",
           y=input$input_4
         ) 
@@ -238,9 +280,11 @@ server <- function(input, output) {
     if(input$input_5 %in% c("School enrollment, primary")) {
       world_bank %>%
         filter(str_detect(Indicator.Name,fixed("School enrollment, primary"))) %>%
+        #Filtering out for private school and only filtering for gross enrollment rates
         filter(!str_detect(Indicator.Name,"private")) %>%
         filter(str_detect(Indicator.Name,fixed("% gross"))) %>%
         ggplot(aes(x=Years_new,y=value,color=Indicator.Name)) +geom_point() +
+        #Regression of my graph
         geom_smooth(se = FALSE, method = "lm") + 
         labs(
           title= paste(input$input_5, "by gender"),
@@ -252,12 +296,26 @@ server <- function(input, output) {
         filter(value != "NA" ) %>%
         filter(str_detect(Indicator.Name,fixed(input$input_5))) %>%
         ggplot(aes(x=Years_new,y=value)) +geom_point(color="orange") +
+        #Making a regression
         geom_smooth(se = FALSE, method = "lm") +
         labs(
-          title="A measure of change with a Social Indicator from the World Bank #looking at input",
+          title=paste("A measure of Social change in regards to", input$input_5),
           x="Year",
           y=input$input_5)
     }
+  })
+  output$m <- renderLeaflet({
+   
+    # Making a map with leaflet
+    #I customized the viewing frame and alsi allowed dragging of the curser 
+    
+    m <- leaflet(options = leafletOptions(dragging = TRUE,
+                                          minZoom = 5,
+                                          maxZoom = 8)) %>%
+      addProviderTiles(providers$Esri.NatGeoWorldMap)  %>% 
+      addMarkers(lng=map$lng, lat=map$lat, popup=map$city) 
+      m
+  
   })
 }
 
