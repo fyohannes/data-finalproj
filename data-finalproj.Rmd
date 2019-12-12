@@ -188,13 +188,27 @@ world_bank %>%
 
 World Bank, Primary School Enrollment by Gender and Total
 ```{r}
-world_bank %>%
+world_bank_primary<- world_bank %>%
+     filter(value != "NA" ) %>%
+    mutate(gender = ifelse(str_detect(Indicator.Name,fixed("male")),1,0))
+ 
+  world_bank_primary %>%
   filter(str_detect(Indicator.Name,fixed("School enrollment, primary"))) %>%
   filter(!str_detect(Indicator.Name,"private")) %>%
   filter(str_detect(Indicator.Name,fixed("% gross"))) %>%
-    ggplot(aes(x=Years_new,y=value,color=Indicator.Name)) +geom_point() +
+  ggplot(aes(x=Years_new,y=value,color=Indicator.Name)) +geom_point() +
   geom_smooth(se = FALSE, method = "lm")
+    
+  model_1 <- lm(data = world_bank_primary, value ~ Years_new + gender ) 
 ```
+Reading World Bank Primary Dataset 
+```{r}
+write_rds(world_bank_primary,"Ethiopia_Economic_Development/Worldbank_primary.rds")
+```
+
+
+
+
 
 World Bank, 
 ```{r}
