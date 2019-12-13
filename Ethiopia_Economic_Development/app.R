@@ -13,9 +13,6 @@ library(fs)
 library(sf)
 library(gganimate)
 library(shinythemes)
-library(vembedr)
-
-#Will allow me to add my youtube video
 
 #Will allow me to put themes and designs
 
@@ -26,6 +23,8 @@ library(leaflet.extras)
 
 library(readr)
 library(tidyverse)
+
+#These libraries are neccessary 
 
 
 un_graph <- read_rds("UN.rds")
