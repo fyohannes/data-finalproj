@@ -5,8 +5,9 @@ account: feven-yohannes
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1504694
-bundleId: 2635989
+bundleId: 2662421
 url: https://feven-yohannes.shinyapps.io/Ethiopia_Economic_Development/
-when: 1575380461.01875
+when: 1576169372.41604
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: www/.DS_Store

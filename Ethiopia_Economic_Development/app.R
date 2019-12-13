@@ -13,6 +13,9 @@ library(fs)
 library(sf)
 library(gganimate)
 library(shinythemes)
+library(vembedr)
+
+#Will allow me to add my youtube video
 
 #Will allow me to put themes and designs
 
@@ -144,7 +147,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
    tabPanel("Summary",
             mainPanel (
               h2("Purpose behind the Project"),
-              h5("In this project, I'm using data from the Worldbank and The UN that shows the social and economic changes that have been occurring in Ethiopia in the last 15 years. The UN data shows data from the last fifteen years, while the Worldbank has data from the last 40. I'm trying to uncover the relationship between the social and economic indicators. Some social indicators include primary school education for male and female children and life expectancy, while the economic indicators show GDP and workforce participation. One would think that the economic growth that Ethiopia has been experiencing would lead to a better living standard for the people of Ethiopia. But is that really the case? Does the economic boom benefit the people, or those in power? The latter part of the question might be a bit difficult to answer giving the scope, but it will be interesting to compare the changes over time.
+              h5("In this project, I'm using data from the World Bank and The UN that shows the social and economic changes that have been occurring in Ethiopia in the last 15 years. The UN data shows data from the last fifteen years, while the Worldbank has data from the last 40. I'm trying to uncover the relationship between the social and economic indicators. Some social indicators include primary school education for male and female children and life expectancy, while the economic indicators show GDP and workforce participation. One would think that the economic growth that Ethiopia has been experiencing would lead to a better living standard for the people of Ethiopia. But is that really the case? Does the economic boom benefit the people, or those in power? The latter part of the question might be a bit difficult to answer giving the scope, but it will be interesting to compare the changes over time.
                  "),
               h2("Conclusions"),
               h5("By looking at the data, we can see that there has been massive economic development, especially in recent years. GDP per capita has substantially increased since 2010 with a GDP per capita of as of 2018. Furthermore, more people are straying away from the agricultural sector and are moving to the industry and service sectors, with the service exceeding 40 percent of the employed population. These upwards trend of development are also prevalent in some of the social indicators. For example, primary school enrollment has increased, mortality for children under the age of five and number of maternal deaths has declined incredibly. These indicators are especially significant to analyze, because often times the prosperity of a nation’s youth and female population can indicate the conditions of the country. From these indicators, as well as other indicators such as expected life expectancy and access to electricity, we can assume that the one’s general well-being in life has improved. Naturally, with any economic development, comes great social and environmental consequences. One can see that total greenhouse gas emissions of carbon dioxide has skyrocketed since 2000 in conjunction with more economic development such as manufacturing and urbanization. Additionally, refugees and those who the United Nations Human Right’s Committee deem as a people at risk, has increased since 2005. This is something interesting to look it because one would not expect this upward trend with increased living standards and improvement of the country’s overall economy. However, this demonstrates some of the problems that can arise with a rapid development. Thus, although economic development has not caused issues such as increased refugees, the subsequent effects of increased socioeconomic gaps, and consequences of urbanization could lead ti increased violence, especially with heightened ethnic tensions, leading to increased refugees. Overall, it is interesting to compare the state of the country and the people in comparison to the growth of the economy.")
@@ -174,6 +177,12 @@ ui <- fluidPage(theme = shinytheme("superhero"),
               h5("Contact me at fyohannes@college.harvard.edu or connect with me on LinkedIn", a("HERE", href="https://www.linkedin.com/in/feven-yohannes-06190118a/")),
               
               # Include a link to the Source Code for reproducibility and credibility
+              
+              h2("Video for Project"),
+              h5("I created a video that gives a quick overview of my project which can be accessed through this link.",a("HERE", href="https://www.youtube.com/watch?v=5vxEcUJD6Co&feature=youtu.be")),
+            
+              
+              # Include a link of my video embedded
               
               h2("Source Code"),
               h5("The source code for this Shiny App can be found at my GitHub", a("HERE", href="https://github.com/fyohannes/final_project_Ethiopia.git"))
